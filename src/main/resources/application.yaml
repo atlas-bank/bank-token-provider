@@ -1,6 +1,7 @@
 spring:
   application:
     name: TSP Token Service Provider
+
   datasource:
     url: ${ATLAS_POSTGRESQL_URL}
     username: ${ATLAS_POSTGRESQL_USERNAME}
@@ -16,6 +17,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+server:
+  port: 8081
 management:
   endpoints:
     web:

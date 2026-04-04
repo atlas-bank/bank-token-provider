@@ -34,6 +34,6 @@ public class ApiKeyValidation implements HandlerInterceptor {
 
         validateApiKey(apiKey);
 
-        return true; // permite continuar para o controller
+        return true;
     }
 }

@@ -24,7 +24,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponseRecord> exception(Exception ex) {
-        return response.of(null, ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        System.out.println(ex.getMessage());
+        return response.of(null, "Erro na aplicação", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

@@ -1,26 +1,27 @@
 package atlas.banking.TSP.controllers;
 
-import atlas.banking.TSP.dtos.CardDTO;
+import atlas.banking.TSP.dtos.CreateCardDTO;
 import atlas.banking.TSP.responses.ApiResponse;
 import atlas.banking.TSP.responses.ApiResponseRecord;
+import atlas.banking.TSP.services.TokenizedCardService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Random;
 
 @RestController
 @RequestMapping("/tokenize")
 public class CardTokenizerController {
     private final ApiResponse response = new ApiResponse();
 
+    private final TokenizedCardService service;
+
+    public CardTokenizerController(TokenizedCardService service) {
+        this.service = service;
+    }
+
     @PostMapping
-    public ResponseEntity<ApiResponseRecord> tokenizeCard(@RequestBody CardDTO dto){
-        Random random = new Random();
-        String randomId = String.valueOf(random.nextInt(1000));
+    public ResponseEntity<ApiResponseRecord> tokenizeCard(@RequestBody CreateCardDTO dto) {
 
-        System.out.println(randomId);
-
-        return response.of(null,"Card Tokenized", HttpStatus.CREATED);
+        return response.of(service.tokenizeCard(dto), "Card Tokenized", HttpStatus.CREATED);
     }
 }
