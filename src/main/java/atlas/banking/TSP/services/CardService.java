@@ -41,7 +41,6 @@ public class CardService {
     private Card createCard(CreateCardDTO dto) {
         Instant createdAt = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-        log.info("CREATE - createdAt: {}", createdAt);
         TokenizedCard tokenizedCard = tokenizationService.tokenizeCard(dto.userCPF(), dto.pin(), createdAt);
         Card card = new Card(
                 tokenizedCard,

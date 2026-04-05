@@ -38,7 +38,6 @@ public class TokenizedCardService {
 
     protected boolean validateCVV(String cpf, TokenizedCard tokenizedCard) {
         String generatedCVV = generateTokenizedCVV(cpf, tokenizedCard.getTokenizedPan(), tokenizedCard.getCreateAt());
-        log.info("VALIDATE - createdAt: {}", tokenizedCard.getCreateAt());
         if (!generatedCVV.equals(tokenizedCard.getTokenizedCvv())) {
             log.warn("Cartão {} com CVV inválido. Calculado: {}, armazenado: {}",
                     tokenizedCard.getTokenizedPan(),
