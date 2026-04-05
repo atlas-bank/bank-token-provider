@@ -36,11 +36,12 @@ public class TokenizedCardService {
         return hash.encode(pin);
     }
 
-    protected boolean validateCVV(String cpf, Instant createdAt, TokenizedCard tokenizedCard) {
-        String generatedCVV = generateTokenizedCVV(cpf, tokenizedCard.getTokenizedPan(), createdAt);
+    protected boolean validateCVV(String cpf, TokenizedCard tokenizedCard) {
+        String generatedCVV = generateTokenizedCVV(cpf, tokenizedCard.getTokenizedPan(), tokenizedCard.getCreateAt());
+        log.info("VALIDATE - createdAt: {}", tokenizedCard.getCreateAt());
         if (!generatedCVV.equals(tokenizedCard.getTokenizedCvv())) {
             log.warn("Cartão {} com CVV inválido. Calculado: {}, armazenado: {}",
-                    tokenizedCard,
+                    tokenizedCard.getTokenizedPan(),
                     generatedCVV,
                     tokenizedCard.getTokenizedCvv());
             return false;
@@ -51,6 +52,9 @@ public class TokenizedCardService {
     public TokenizedCard tokenizeCard(String cpf, String pin, Instant createdAt) {
 
         TokenizedCard tokenizedCard = new TokenizedCard();
+
+        tokenizedCard.setCreateAt(createdAt);
+        tokenizedCard.setUpdatedAt(createdAt);
 
         tokenizedCard.setTokenizedPan(generateTokenizedPan(cpf, createdAt));
         tokenizedCard.setTokenizedCvv(generateTokenizedCVV(cpf, tokenizedCard.getTokenizedPan(), createdAt));

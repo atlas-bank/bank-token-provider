@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 @Entity
@@ -23,22 +24,15 @@ public class TokenizedCard {
     @Column(unique = true)
     private String tokenizedPan;
 
-    @Column(unique = true)
     private String tokenizedCvv;
 
     @JsonIgnore
     private String hashPin;
 
     @JsonIgnore
-    private LocalDate createAt;
+    private Instant createAt;
     @JsonIgnore
-    private LocalDate updatedAt;
-
-    public TokenizedCard() {
-        LocalDate date = LocalDate.now();
-        this.createAt = date;
-        this.updatedAt = date;
-    }
+    private Instant updatedAt;
 
 
 }

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Slf4j
@@ -38,7 +39,9 @@ public class CardService {
     }
 
     private Card createCard(CreateCardDTO dto) {
-        Instant createdAt = Instant.now();
+        Instant createdAt = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+        log.info("CREATE - createdAt: {}", createdAt);
         TokenizedCard tokenizedCard = tokenizationService.tokenizeCard(dto.userCPF(), dto.pin(), createdAt);
         Card card = new Card(
                 tokenizedCard,
@@ -50,19 +53,19 @@ public class CardService {
                 dto.international(),
                 createdAt
         );
-        String id = repository.save(card).getId().toString();
-        log.info("Gerado cartão com ID: {}", id);
+
+        repository.save(card);
+        log.info("Gerado cartão com PAN: {}", card.getTokenizedCard().getTokenizedPan());
         return card;
     }
 
     public List<Card> getCardsByCpf(String cpf) {
         List<Card> cards = repository.getCardByuserCPF(cpf);
-
+        System.out.println(cards.toArray().length);
         cards.removeIf(card -> {
             TokenizedCard tokenizedCard = card.getTokenizedCard();
             return !tokenizationService.validateCVV(
                     card.getUserCPF(),
-                    card.getCreatedAt(),
                     tokenizedCard
             );
         });

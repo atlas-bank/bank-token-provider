@@ -6,6 +6,7 @@ import atlas.banking.TSP.enums.CardStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -18,6 +19,7 @@ import java.time.YearMonth;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
