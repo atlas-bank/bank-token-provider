@@ -34,6 +34,12 @@ public class CardService {
         // pega o primeiro e último nome do usuário
         String[] fullnameArray = fullname.trim().split(" ");
         String first = fullnameArray[0];
+
+        if (fullnameArray.length > 1) {
+            log.warn("Nome do cartão não contém sobrenome");
+            return first;
+        }
+
         String last = fullnameArray[fullnameArray.length - 1];
         return (first + " " + last).toUpperCase();
     }
