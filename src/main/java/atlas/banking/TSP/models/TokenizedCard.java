@@ -17,7 +17,8 @@ public class TokenizedCard {
     private String id;
 
     @JsonIgnore
-    private String hashUserCpf;
+    @OneToOne(mappedBy = "tokenizedCard")
+    private Card card;
 
     @Column(unique = true)
     private String tokenizedPan;
@@ -28,8 +29,9 @@ public class TokenizedCard {
     @JsonIgnore
     private String hashPin;
 
-
+    @JsonIgnore
     private LocalDate createAt;
+    @JsonIgnore
     private LocalDate updatedAt;
 
     public TokenizedCard() {

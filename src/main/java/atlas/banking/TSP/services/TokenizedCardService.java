@@ -1,7 +1,5 @@
 package atlas.banking.TSP.services;
 
-import atlas.banking.TSP.dtos.CreateCardDTO;
-import atlas.banking.TSP.dtos.GetCardDTO;
 import atlas.banking.TSP.models.TokenizedCard;
 import atlas.banking.TSP.repositories.TokenizedCardRepository;
 import atlas.banking.TSP.utils.Generator;
@@ -10,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -39,40 +36,29 @@ public class TokenizedCardService {
         return hash.encode(pin);
     }
 
-    private String hashUserCpf(String cpf) {
-
-        return generator.deterministicHashCpf(cpf);
-    }
-
-    public List<TokenizedCard> getTokenizedCards(GetCardDTO dto) {
-        String hashCpf = generator.deterministicHashCpf(dto.userCpf());
-
-        List<TokenizedCard> cards = repository.findByhashUserCpf(hashCpf);
-
-        cards.removeIf(card -> {
-            String calculatedCvv = generator.generateCVV(dto.userCpf(), card.getTokenizedPan(), dto.createdAt());
-            if (!calculatedCvv.equals(card.getTokenizedCvv())) {
-                log.warn("Cartão {} com CVV inválido. Calculado: {}, armazenado: {}",
-                        card.getTokenizedPan(),
-                        calculatedCvv,
-                        card.getTokenizedCvv());
-                return true;
-            }
+    protected boolean validateCVV(String cpf, Instant createdAt, TokenizedCard tokenizedCard) {
+        String generatedCVV = generateTokenizedCVV(cpf, tokenizedCard.getTokenizedPan(), createdAt);
+        if (!generatedCVV.equals(tokenizedCard.getTokenizedCvv())) {
+            log.warn("Cartão {} com CVV inválido. Calculado: {}, armazenado: {}",
+                    tokenizedCard,
+                    generatedCVV,
+                    tokenizedCard.getTokenizedCvv());
             return false;
-        });
-        return cards;
+        }
+        return true;
     }
 
-    public String tokenizeCard(CreateCardDTO card) {
+    public TokenizedCard tokenizeCard(String cpf, String pin, Instant createdAt) {
 
         TokenizedCard tokenizedCard = new TokenizedCard();
-        tokenizedCard.setHashUserCpf(hashUserCpf(card.userCpf()));
 
-        tokenizedCard.setTokenizedPan(generateTokenizedPan(card.userCpf(), card.createdAt()));
-        tokenizedCard.setTokenizedCvv(generateTokenizedCVV(card.userCpf(), tokenizedCard.getTokenizedPan(), card.createdAt()));
+        tokenizedCard.setTokenizedPan(generateTokenizedPan(cpf, createdAt));
+        tokenizedCard.setTokenizedCvv(generateTokenizedCVV(cpf, tokenizedCard.getTokenizedPan(), createdAt));
 
 
-        tokenizedCard.setHashPin(hashPin(card.pin()));
-        return repository.save(tokenizedCard).getId();
+        tokenizedCard.setHashPin(hashPin(pin));
+        String id = repository.save(tokenizedCard).getId();
+        log.info("Gerado cartão tokenizado com ID: {}", id);
+        return tokenizedCard;
     }
 }
